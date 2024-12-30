@@ -1,9 +1,12 @@
 import discord
 from discord.ext import commands
 import os
+import requests
+import random
 
 # Get the token from the environment variable
 TOKEN = os.getenv("DISCORD_TOKEN")
+GIPHY_TOKEN = os.getenv("GIPHY_TOKEN")
 
 # Replace with your target voice channel ID
 TARGET_CHANNEL_ID = os.getenv("CHANNEL_ID")
@@ -15,6 +18,21 @@ intents.guilds = True
 intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+def get_random_gif(query):
+    url=f"https://api.giphy.com/v1/gifs/search"
+    params = {
+        "api_key": GIPHY_TOKEN,
+        "q": query,
+        "limit": 10,
+        "rating": "pg",
+    }
+    
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        gifs = response.json().get("data")
+        if gifs:
+            return random.choice(gifs)["url"]
+    return None
 @bot.event
 async def on_ready():
     print(f"Bot is ready! Logged in as {bot.user}")
@@ -40,7 +58,11 @@ async def on_voice_state_update(member, before, after):
         if member_count == 4:
             general_text_channel = discord.utils.get(guild.text_channels, name="general")  # Replace with your text channel name
             if general_text_channel:
-                await general_text_channel.send(f"Can you smell that?")
+                gif_url = get_random_gif("Can you smell that?")
+                if gif_url:
+                    await general_text_channel.send(gif_url)
+                else:
+                    await general_text_channel.send(f"Can you smell that?")
 
 # Run the bot
 if TOKEN is None:
