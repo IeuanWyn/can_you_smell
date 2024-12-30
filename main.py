@@ -37,7 +37,7 @@ async def on_voice_state_update(member, before, after):
         member_count = len([m for m in channel.members if not m.bot])  # Exclude bots
 
         # Send a message if there are exactly 4 people
-        if member_count == 1:
+        if member_count == 4:
             general_text_channel = discord.utils.get(guild.text_channels, name="general")  # Replace with your text channel name
             if general_text_channel:
                 await general_text_channel.send(f"Can you smell that?")
