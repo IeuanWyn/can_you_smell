@@ -23,6 +23,9 @@ intents.guilds = True
 intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+# Dictionary to track the member count of channels
+channel_member_count = {}
+
 # Slash command example
 @bot.tree.command(name='smell', description='Check if something smells')
 async def smell(interaction: discord.Interaction):
@@ -47,25 +50,42 @@ def get_random_gif(query):
 # Post a message in the target channel
 async def post_message(guild):
     channel = guild.get_channel(TARGET_CHANNEL_ID)
-
     if channel:
-        member_count = len([m for m in channel.members if not m.bot])  # Exclude bots
-        if member_count == 1:  # Adjust condition as needed
-            general_text_channel = discord.utils.get(guild.text_channels, name=TEXT_CHANNEL_NAME)
-            if not general_text_channel:
-                general_text_channel = discord.utils.get(guild.text_channels, name="general")
-            if general_text_channel:
-                gif_url = get_random_gif("Can you smell that?")
-                if gif_url:
-                    await general_text_channel.send(gif_url)
-                else:
-                    await general_text_channel.send("Can you smell that?")
+        general_text_channel = discord.utils.get(guild.text_channels, name=TEXT_CHANNEL_NAME)
+        if not general_text_channel:
+            general_text_channel = discord.utils.get(guild.text_channels, name="general")
+        if general_text_channel:
+            gif_url = get_random_gif("Can you smell that?")
+            if gif_url:
+                await general_text_channel.send(gif_url)
+            else:
+                await general_text_channel.send("Can you smell that?")
 
 # Event for voice state updates
 @bot.event
 async def on_voice_state_update(member, before, after):
+    global channel_member_count
+
     guild = member.guild
-    await post_message(guild)  # Ensure the function is awaited
+    target_channel = guild.get_channel(TARGET_CHANNEL_ID)
+
+    if not target_channel:
+        return  # Target channel doesn't exist or bot can't access it
+
+    # Update the member count for the channel
+    current_members = [m for m in target_channel.members if not m.bot]  # Exclude bots
+    current_count = len(current_members)
+    previous_count = channel_member_count.get(target_channel.id, 0)
+
+    # Debug logs for tracking
+    print(f"Channel {target_channel.name}: Previous count: {previous_count}, Current count: {current_count}")
+
+    # Update the dictionary with the current count
+    channel_member_count[target_channel.id] = current_count
+
+    # Trigger message only if it goes from 3 -> 4
+    if previous_count == 3 and current_count == 4:
+        await post_message(guild)
 
 # Event when the bot is ready
 @bot.event
