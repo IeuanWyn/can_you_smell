@@ -7,7 +7,7 @@ import random
 # Get the token from the environment variable
 TOKEN = os.getenv("DISCORD_TOKEN")
 GIPHY_TOKEN = os.getenv("GIPHY_TOKEN")
-
+TEXT_CHANNEL_NAME = os.getenv("TEXT_CHANNEL_NAME")
 # Replace with your target voice channel ID
 TARGET_CHANNEL_ID = os.getenv("CHANNEL_ID")
 
@@ -55,8 +55,8 @@ async def on_voice_state_update(member, before, after):
         member_count = len([m for m in channel.members if not m.bot])  # Exclude bots
 
         # Send a message if there are exactly 4 people
-        if member_count == 4:
-            general_text_channel = discord.utils.get(guild.text_channels, name="general")  # Replace with your text channel name
+        if member_count == 1:
+            general_text_channel = discord.utils.get(guild.text_channels, name=TEXT_CHANNEL_NAME)  # Replace with your text channel name
             if general_text_channel:
                 gif_url = get_random_gif("Can you smell that?")
                 if gif_url:
