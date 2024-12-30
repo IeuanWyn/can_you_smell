@@ -6,7 +6,7 @@ import os
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 # Replace with your target voice channel ID
-TARGET_CHANNEL_ID = 123456789012345678
+TARGET_CHANNEL_ID = os.getenv("CHANNEL_ID")
 
 # Set up bot
 intents = discord.Intents.default()
