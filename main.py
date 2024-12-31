@@ -9,6 +9,8 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 GIPHY_TOKEN = os.getenv("GIPHY_TOKEN")
 TEXT_CHANNEL_NAME = os.getenv("TEXT_CHANNEL_NAME")
 TARGET_CHANNEL_ID = os.getenv("CHANNEL_ID")
+EXCLUDED_USER_IDS = os.getenv("EXCLUDED_USER_IDS")
+EXCLUDED_USER_IDS = [int(user_id.strip()) for user_id in EXCLUDED_USER_IDS.split(",") if user_id.strip()]
 
 # Ensure all required environment variables are present
 if not TOKEN or not TARGET_CHANNEL_ID:
@@ -73,7 +75,7 @@ async def on_voice_state_update(member, before, after):
         return  # Target channel doesn't exist or bot can't access it
 
     # Update the member count for the channel
-    current_members = [m for m in target_channel.members if not m.bot]  # Exclude bots
+    current_members = [m for m in target_channel.members if not m.bot and m.id not in EXCLUDED_USER_IDS]  # Exclude bots
     current_count = len(current_members)
     previous_count = channel_member_count.get(target_channel.id, 0)
 
