@@ -86,7 +86,7 @@ async def on_voice_state_update(member, before, after):
     channel_member_count[target_channel.id] = current_count
 
     # Trigger message only if it goes from 3 -> 4
-    if previous_count == 3 and current_count == 4:
+    if previous_count == 3 and current_count == 5:
         await post_message(guild)
 
 # Event when the bot is ready
