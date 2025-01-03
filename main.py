@@ -39,7 +39,7 @@ def get_random_gif(query):
     params = {
         "api_key": GIPHY_TOKEN,
         "q": query,
-        "limit": 10,
+        "limit": 5,
         "rating": "pg",
     }
     response = requests.get(url, params=params)
@@ -57,7 +57,7 @@ async def post_message(guild):
         if not general_text_channel:
             general_text_channel = discord.utils.get(guild.text_channels, name="general")
         if general_text_channel:
-            gif_url = get_random_gif("Can you smell that?")
+            gif_url = get_random_gif("Can you smell?")
             if gif_url:
                 await general_text_channel.send(gif_url)
             else:
